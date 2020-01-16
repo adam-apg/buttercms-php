@@ -4,21 +4,20 @@ namespace ButterCMS\Model;
 
 class Post extends Model
 {
-    protected
-        $slug,
-        $url,
-        $published,
-        $created,
-        $status,
-        $title,
-        $body,
-        $summary,
-        $seo_title,
-        $meta_description,
-        $author,
-        $categories,
-        $tags,
-        $featured_image;
+    protected $slug;
+    protected $url;
+    protected $published;
+    protected $created;
+    protected $status;
+    protected $title;
+    protected $body;
+    protected $summary;
+    protected $seo_title;
+    protected $meta_description;
+    protected $author;
+    protected $categories;
+    protected $tags;
+    protected $featured_image;
 
     public function __construct(array $data)
     {
@@ -49,5 +48,33 @@ class Post extends Model
     public function isPublished()
     {
         return 'published' === $this->status;
+    }
+
+    public function resizeFeaturedImage($params = null)
+    {
+        $path = $this->featured_image;
+        if ($params) {
+            $t = explode('/', $path);
+            $filename = $t[count($t) - 1];
+            $path = str_ireplace('cdn.buttercms.com', 'fs.buttercms.com', $path);
+            $commands = $this->resizeCommands($params);
+            $path = str_ireplace($filename, $commands, $path);
+            $path .= "/$filename";
+        }
+        return $path;
+    }
+
+    private function resizeCommands(array $params)
+    {
+        $cntr = 0;
+        $response = 'resize=';
+        foreach ($params as $key => $value) {
+            if ($cntr > 0) {
+                $response .= ',';
+            }
+            $response .= "$key:$value";
+            $cntr++;
+        }
+        return $response;
     }
 }
