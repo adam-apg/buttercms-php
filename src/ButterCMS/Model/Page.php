@@ -8,14 +8,29 @@ class Page extends Model
     protected $page_type;
     protected $fields;
 
-    public function getField($fieldName, $default = null)
+    public function getField($key, $default = null)
     {
-        return isset($this->fields[$fieldName]) ? $this->fields[$fieldName] : $default;
+        if (is_null($key)) {
+            return null;
+        }
+        if (isset($this->fields[$key])) {
+            return $this->fields[$key];
+        }
+
+        $array = $this->fields;
+
+        foreach (explode('.', $key) as $segment) {
+            if (!is_array($array) || !array_key_exists($segment, $array)) {
+                return value($default);
+            }
+            $array = $array[$segment];
+        }
+        return $array;
     }
 
-    public function resizeField($fieldName, $params = null)
+    public function resizeField($key, $params = null)
     {
-        $path = $this->fields[$fieldName];
+        $path = $this->getField($key);
         if ($params) {
             $t = explode('/', $path);
             $filename = $t[count($t) - 1];
