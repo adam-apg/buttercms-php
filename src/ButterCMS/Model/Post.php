@@ -18,6 +18,10 @@ class Post extends Model
     protected $categories;
     protected $tags;
     protected $featured_image;
+<<<<<<< HEAD
+=======
+    protected $featured_image_alt;
+>>>>>>> master
 
     public function __construct(array $data)
     {
